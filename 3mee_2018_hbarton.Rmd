@@ -2,7 +2,9 @@
 title: "Inferring the selective pressures acting on insertions and deletions in the great tit genome"
 author: "Henry Barton"
 date: ' 11/10/18'
-institute: 'The University of Sheffield'
+institute: |
+  | The University of Sheffield, UK
+  | hbarton2@sheffield.ac.uk
 output:
   beamer_presentation:
     fig_caption: no
@@ -23,6 +25,10 @@ slides > slide:not(.nobackground):after {
 knitr::opts_chunk$set(echo = FALSE, dev.args = list(bg = 'transparent'), dev='pdf')
 ```
 
+# Introduction
+
+## Insertions and deletions
+
 ```{r, echo=FALSE, warning=FALSE, include=FALSE}
 
 # sfs plot
@@ -33,10 +39,6 @@ library('dplyr')
 plot_base_size = 30
 
 ```
-
-# Introduction
-
-## Insertions and deletions
 
 - short INDELs: sections of DNA < 50bp that are deleted or inserted in a genome
 <!--
@@ -72,18 +74,15 @@ plot_base_size = 30
     * low deletion rate $\rightarrow$ large genomes?
     * high deletion rate $\rightarrow$ compact genomes?
 
-* Selection on insertions to maintain minimum intron size?
-  
-* Picture is complicated by errors identifying ancestral states
+
 
 \   
 \  
 \  
 \  
 
-<div style="position:absolute;bottom:4%;left:5%;width:900px;font-size:11pt;"> (Britten, 2002; Leushkin and Bazykin, 2013; Nam and Ellegren, 2012; Ometto et al., 2005; Sun et al., 2012) </div>
+<div style="position:absolute;bottom:4%;left:5%;width:900px;font-size:11pt;"> (Britten, 2002; Nam and Ellegren, 2012; Ometto et al., 2005) </div>
 
-<!--
 
 ## INDEL mutation
 
@@ -101,9 +100,10 @@ plot_base_size = 30
     * elevated fixation probability
     * biased gene conversion
     * minimum intron size
-    * polarisation error
+    
+* Polarisation error
   
--->
+<div style="position:absolute;bottom:4%;left:5%;width:900px;font-size:11pt;"> (Leushkin and Bazykin, 2013; Ometto et al., 2005) </div>
 
 ## Importance of polarisation error
 
@@ -251,21 +251,26 @@ Quantify how natural selection shapes INDEL diversity in the great tit (*Parus m
 
 <div style="position:absolute;bottom:4%;left:5%;width:450px;font-size:11pt;"> (van Oers et al., 2014; Stapley et al., 2008) </div>
 
-# The model - 'anavar'
+# Tackling polarisation error
 
 ## A novel maximum likelihood approach
 
+  * 'anavar' 
   * takes the unfolded site frequency spectrum
   * estimates for both insertions and deletions:
     * mutation rate ($\theta = 4N_e\mu$)
-    * the distribution of fitness effects (DFE)
-    * polarisation error
+    * **the distribution of fitness effects (DFE)**
+    * polarisation error ($\epsilon$)
   * Controls for demography using neutral sites (Eyre-Walker et al., 2006)
   * Applicable to both INDELs and SNPs or a combination
 
 <div style="position:absolute;bottom:4%;left:5%;width:450px;font-size:11pt;"> (Barton and Zeng, MBE, 2018) </div>
 
-## the model DFEs
+## What is the DFE?
+
+* explain the dfe
+
+## The model can describe the DFE in two ways
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.width=16, fig.height=9}
 library(viridis)
@@ -320,7 +325,7 @@ data_sim$new_var = paste(toupper(data_sim$var_type), ' (polarisation error = ', 
 
 ggplot(data_sim, aes(x=gamma, fill=data_type, colour=data_type))+
        geom_density(alpha = 0.2, n = 50000) +
-       facet_wrap(~new_var, nrow=1) + coord_cartesian(xlim=c(0, 10)) +
+       facet_wrap(~new_var, nrow=1) + coord_cartesian(xlim=c(0, 10), ylim=c(0,1)) +
        scale_colour_manual(values=c(NA, NA, viridis(4)[3], NA)) + scale_fill_manual(values=c(NA, NA, viridis(4)[3], NA)) +
   xlab(expression(-gamma)) +
   theme_grey(base_size = plot_base_size) +
@@ -333,7 +338,7 @@ ggplot(data_sim, aes(x=gamma, fill=data_type, colour=data_type))+
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.width=16, fig.height=9}
 ggplot(data_sim, aes(x=gamma, fill=data_type, colour=data_type))+
        geom_density(alpha = 0.2, n = 50000) +
-       facet_wrap(~new_var, nrow=1) + coord_cartesian(xlim=c(0, 10)) +
+       facet_wrap(~new_var, nrow=1) + coord_cartesian(xlim=c(0, 10), ylim=c(0,1)) +
        scale_colour_manual(values=viridis(4)) + scale_fill_manual(values=viridis(4)) +
   xlab(expression(-gamma)) +
   theme_grey(base_size = plot_base_size) +
@@ -341,7 +346,7 @@ ggplot(data_sim, aes(x=gamma, fill=data_type, colour=data_type))+
 
 ```
 
-# The data
+# Applying the model to the great tit
 
 ## Sample and pipeline
 
@@ -353,7 +358,7 @@ ggplot(data_sim, aes(x=gamma, fill=data_type, colour=data_type))+
 
 ![birds](align_birds.png)
 
-## Regional variation in purifying selection
+## Summarising the data set
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.width=16, fig.height=9}
 
@@ -661,7 +666,7 @@ grid.arrange(theta_plot, pi_plot, nrow=1)
 
 ![](diagrams/Slide25.png)
 
-## sep neutral vs sel
+## Driven by neutral variation
 
 ```{R, echo=FALSE, warning=FALSE, message=FALSE, fig.width=16, fig.height=9, fig.align='center'}
 dfe = read.delim('~/parus_indel/gene_proximity_analyses/nc_dfe_exon_dist.txt')
@@ -682,7 +687,11 @@ ggplot(dfe, aes(x=dist*2, y=cat_theta*10000, colour=toupper(var))) +
 
 ```
 
-## correlation power
+## How far does the correlation persist?
+
+* few slides explaining approach?
+
+## How far does the correlation persist?
 
 ```{R, echo=FALSE, warning=FALSE, message=FALSE, fig.width=16, fig.height=9, fig.align='center'}
 # getting theta anavar data estimates into shape
