@@ -5,6 +5,7 @@ date: ' 11/10/18'
 institute: |
   | The University of Sheffield, UK
   | hbarton2@sheffield.ac.uk
+  | https://henryjuho.github.io/hj_barton/
 output:
   beamer_presentation:
     fig_caption: no
@@ -81,7 +82,7 @@ plot_base_size = 30
 \  
 \  
 
-<div style="position:absolute;bottom:4%;left:5%;width:900px;font-size:11pt;"> (Britten, 2002; Nam and Ellegren, 2012; Ometto et al., 2005) </div>
+<div style="position:absolute;bottom:4%;left:5%;width:900px;font-size:11pt;"> (Britten, 2002; Nam and Ellegren, 2012; Ometto et al., 2005; Sun et al., 2012) </div>
 
 
 ## INDEL mutation
@@ -89,6 +90,12 @@ plot_base_size = 30
   * Deletion bias in most organisms
   * Polymerase slippage can explain majority of short INDEL events
   
+![poly_slip](rep_slip.png)
+
+<div style="position:absolute;bottom:4%;left:5%;width:900px;font-size:11pt;">
+<http://www.microtyping.nl/content/2011/11/MLVA>
+</div>
+
 ## INDEL selection
 
 * Deletions
@@ -268,14 +275,22 @@ Quantify how natural selection shapes INDEL diversity in the great tit (*Parus m
 
 ## What is the DFE?
 
-* explain the dfe
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.width=16, fig.height=9}
+library(viridis)
+sim_gamma <- data.frame(gamma = rgamma(100000, shape = 7, rate = 1))
+
+ggplot(sim_gamma, aes(x=gamma)) +
+  geom_histogram(alpha=0.2, colour=viridis(3)[2]) +
+  geom_freqpoly(colour=viridis(3)[1], size=3) +
+  theme_classic(base_size = plot_base_size) +
+  xlab(expression(gamma==N[e]*s)) + ylab('Density') +
+  theme(axis.text.y=element_blank())
+
+```
 
 ## The model can describe the DFE in two ways
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.width=16, fig.height=9}
-library(viridis)
-
-
 discrete_g = data.frame(gamma=c(-8, -0.8, -5, -0.5), var_type=c('DEL','DEL', 'INS', 'INS'), theta=c(0.002, 0.0002, 0.001, 0.0001), s_class=c(1,2,1,2), prop=c(0.4, 0.6, 0.2, 0.8))
 
 discrete_plot = ggplot(discrete_g, aes(x=-1*gamma, y=prop, fill=var_type)) +
@@ -547,7 +562,7 @@ alpha_plot
 
 ![ls4](diagrams/Slide12.png)
 
-## Evidence for linked selection?
+## Diversity increases with distance
 
 ```{R, echo=FALSE, warning=FALSE, message=FALSE, fig.width=16, fig.height=9, fig.align='center'}
 library(gtools)
@@ -634,6 +649,12 @@ grid.arrange(theta_plot, pi_plot, nrow=1)
 
 # Linked selection?
 
+## Linked selection
+
+![](josephs_wright_2016_fig1_mod.png)
+
+<div style="position:absolute;bottom:4%;left:5%;width:450px;font-size:11pt;"> (Cropped from fig 1. Josephs and Wright, 2016) </div>
+
 ## Two possible explanations
 
 ![](diagrams/Slide18.png)
@@ -689,7 +710,104 @@ ggplot(dfe, aes(x=dist*2, y=cat_theta*10000, colour=toupper(var))) +
 
 ## How far does the correlation persist?
 
-* few slides explaining approach?
+```{R, echo=FALSE, warning=FALSE, message=FALSE, fig.width=16, fig.height=9, fig.align='center'}
+theta_plot = ggplot(subset(prox_data, sel_type=='sel'), aes(x=distance, y=theta*10000, colour=toupper(var_type))) +
+      geom_point(stat='identity', size = 7) +
+      theme_grey(base_size=plot_base_size) +
+      xlim(0,100)+
+      ylab(expression(theta * x *10^-4))  + xlab('Distance from exons (kb)') +
+      theme(legend.title = element_blank(), legend.position = c(0.15, 0.87), legend.background = element_blank()) +
+      scale_colour_manual(values=pal)+
+      ylim(min(prox_data$theta)*10000, max(prox_data$theta)*10000)
+
+pi_plot = ggplot(subset(all_data, variation!='SNP' & variation!='INDEL'), aes(x=dist, y=pi_per_site*10000, colour=variation)) +
+      geom_point(stat='identity', size = 7) +
+      theme_grey(base_size=plot_base_size) +
+      xlim(0,100)+
+      ylab(expression(pi* x *10^-4))  + xlab('Distance from exons (kb)') +
+      theme(legend.position = 'none', legend.background = element_blank())+
+      scale_colour_manual(values=pal) +
+      ylim(min(subset(all_data, variation!='SNP' & variation!='INDEL')$pi_per_site)*10000, max(subset(all_data, variation!='SNP' & variation!='INDEL')$pi_per_site)*10000)
+
+grid.arrange(theta_plot, pi_plot, nrow=1)
+```
+
+## How far does the correlation persist?
+
+```{R, echo=FALSE, warning=FALSE, message=FALSE, fig.width=16, fig.height=9, fig.align='center'}
+theta_plot = ggplot(subset(prox_data, sel_type=='sel' & distance>25), aes(x=distance, y=theta*10000, colour=toupper(var_type))) +
+      geom_point(stat='identity', size = 7)+
+      geom_vline(xintercept=25, linetype="dashed", color = "tomato 3", size=2) +
+      theme_grey(base_size=plot_base_size) +
+      xlim(0,100)+
+      ylab(expression(theta * x *10^-4))  + xlab('Distance from exons (kb)') +
+      theme(legend.title = element_blank(), legend.position = c(0.15, 0.87), legend.background = element_blank()) +
+      scale_colour_manual(values=pal) +
+      ylim(min(prox_data$theta)*10000, max(prox_data$theta)*10000)
+
+pi_plot = ggplot(subset(all_data, variation!='SNP' & variation!='INDEL'& dist>25), aes(x=dist, y=pi_per_site*10000, colour=variation)) +
+      geom_point(stat='identity', size = 7)+
+      geom_vline(xintercept=25, linetype="dashed", color = "tomato 3", size=2) +
+      theme_grey(base_size=plot_base_size) +
+      xlim(0,100)+
+      ylab(expression(pi* x *10^-4))  + xlab('Distance from exons (kb)') +
+      theme(legend.position = 'none', legend.background = element_blank())+
+      scale_colour_manual(values=pal)+
+      ylim(min(subset(all_data, variation!='SNP' & variation!='INDEL')$pi_per_site)*10000, max(subset(all_data, variation!='SNP' & variation!='INDEL')$pi_per_site)*10000)
+
+grid.arrange(theta_plot, pi_plot, nrow=1)
+```
+## How far does the correlation persist?
+
+```{R, echo=FALSE, warning=FALSE, message=FALSE, fig.width=16, fig.height=9, fig.align='center'}
+theta_plot = ggplot(subset(prox_data, sel_type=='sel' & distance>50), aes(x=distance, y=theta*10000, colour=toupper(var_type))) +
+      geom_point(stat='identity', size = 7)+
+      geom_vline(xintercept=50, linetype="dashed", color = "tomato 3", size=2) +
+      theme_grey(base_size=plot_base_size) +
+      xlim(0,100)+
+      ylab(expression(theta * x *10^-4))  + xlab('Distance from exons (kb)') +
+      theme(legend.title = element_blank(), legend.position = c(0.15, 0.87), legend.background = element_blank()) +
+      scale_colour_manual(values=pal)+
+      ylim(min(prox_data$theta)*10000, max(prox_data$theta)*10000)
+
+pi_plot = ggplot(subset(all_data, variation!='SNP' & variation!='INDEL'& dist>50), aes(x=dist, y=pi_per_site*10000, colour=variation)) +
+      geom_point(stat='identity', size = 7)+
+      geom_vline(xintercept=50, linetype="dashed", color = "tomato 3", size=2) +
+      theme_grey(base_size=plot_base_size) +
+      xlim(0,100)+
+      ylab(expression(pi* x *10^-4))  + xlab('Distance from exons (kb)') +
+      theme(legend.position = 'none', legend.background = element_blank())+
+      scale_colour_manual(values=pal)+
+      ylim(min(subset(all_data, variation!='SNP' & variation!='INDEL')$pi_per_site)*10000, max(subset(all_data, variation!='SNP' & variation!='INDEL')$pi_per_site)*10000)
+
+grid.arrange(theta_plot, pi_plot, nrow=1)
+```
+
+## How far does the correlation persist?
+
+```{R, echo=FALSE, warning=FALSE, message=FALSE, fig.width=16, fig.height=9, fig.align='center'}
+theta_plot = ggplot(subset(prox_data, sel_type=='sel' & distance>75), aes(x=distance, y=theta*10000, colour=toupper(var_type))) +
+      geom_point(stat='identity', size = 7)+
+      geom_vline(xintercept=75, linetype="dashed", color = "tomato 3", size=2) +
+      theme_grey(base_size=plot_base_size) +
+      xlim(0,100)+
+      ylab(expression(theta * x *10^-4))  + xlab('Distance from exons (kb)') +
+      theme(legend.title = element_blank(), legend.position = c(0.15, 0.87), legend.background = element_blank()) +
+      scale_colour_manual(values=pal)+
+      ylim(min(prox_data$theta)*10000, max(prox_data$theta)*10000)
+
+pi_plot = ggplot(subset(all_data, variation!='SNP' & variation!='INDEL'& dist>75), aes(x=dist, y=pi_per_site*10000, colour=variation)) +
+      geom_point(stat='identity', size = 7)+
+      geom_vline(xintercept=75, linetype="dashed", color = "tomato 3", size=2) +
+      theme_grey(base_size=plot_base_size) +
+      xlim(0,100)+
+      ylab(expression(pi* x *10^-4))  + xlab('Distance from exons (kb)') +
+      theme(legend.position = 'none', legend.background = element_blank())+
+      scale_colour_manual(values=pal)+
+      ylim(min(subset(all_data, variation!='SNP' & variation!='INDEL')$pi_per_site)*10000, max(subset(all_data, variation!='SNP' & variation!='INDEL')$pi_per_site)*10000)
+
+grid.arrange(theta_plot, pi_plot, nrow=1)
+```
 
 ## How far does the correlation persist?
 
