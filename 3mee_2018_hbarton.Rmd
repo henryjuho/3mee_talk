@@ -1,7 +1,7 @@
 ---
 title: "Inferring the selective pressures acting on insertions and deletions in the great tit genome"
 author: "Henry Barton"
-date: ' 11/10/18'
+date: '11/10/18'
 institute: |
   | The University of Sheffield, UK
   | hbarton2@sheffield.ac.uk
@@ -283,7 +283,7 @@ ggplot(sim_gamma, aes(x=gamma)) +
   geom_histogram(alpha=0.2, colour=viridis(3)[2]) +
   geom_freqpoly(colour=viridis(3)[1], size=3) +
   theme_classic(base_size = plot_base_size) +
-  xlab(expression(gamma==N[e]*s)) + ylab('Density') +
+  xlab(expression(-gamma/(4*N[e]*s))) + ylab('Density') +
   theme(axis.text.y=element_blank())
 
 ```
@@ -298,7 +298,7 @@ discrete_plot = ggplot(discrete_g, aes(x=-1*gamma, y=prop, fill=var_type)) +
   scale_fill_manual(values = viridis(n=3)) +
   theme_grey(base_size = plot_base_size) +
   xlab(expression(-gamma)) +
-  ylab('proportion') +
+  ylab('proportion') + xlim(0, 20) +
   theme(legend.position = c(0.8, 0.8), legend.title=element_blank(),
         axis.text.y=element_blank()) + ggtitle('Discrete DFE')
 
@@ -324,7 +324,7 @@ continuous_plot = ggplot(continuous_g, aes(x=gamma/10, colour=var_type, fill=var
         ) + ggtitle('Continuous DFE')
 
 
-grid.arrange(discrete_plot, continuous_plot, nrow=1)
+grid.arrange(continuous_plot, discrete_plot, nrow=1)
 ```
 
 
@@ -883,7 +883,7 @@ theta_plot = ggplot(theta_cors, aes(x=as.numeric(as.character(min_dist)), y=as.n
 theta_plot
 ```
 
-# Recombination Analyses
+# Recombination should modulate the impact of linked selection
 
 ## Getting the data
 
@@ -1071,10 +1071,10 @@ tajd_plot2 = ggplot(tajd_data2, aes(x=log(rec_rate + 1), y=value, colour=toupper
 ## Conclusion
 
 * INDELs in genes mostly extremely deleterious - 96%
-* Remainder are weakly deleterious - deletions more so
+* Remainder are weakly deleterious
 * $\alpha$ estimate at 71% and 86% for insertions and deletions 
-* Regions adjacent to exons, and areas of low recombination, have reduced INDEL diversity - genetic hitch-hiking
-* Extends over relatively large distance 0-100kb
+* Regions adjacent to exons, and areas of low recombination, have reduced INDEL diversity - linked selection
+* Extends over relatively large distance up to ~50kb
 
 ## Next steps
 
