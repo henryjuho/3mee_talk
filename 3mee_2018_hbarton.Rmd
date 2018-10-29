@@ -110,7 +110,7 @@ plot_base_size = 30
     
 * Polarisation error
   
-<div style="position:absolute;bottom:4%;left:5%;width:900px;font-size:11pt;"> (Leushkin and Bazykin, 2013; Ometto et al., 2005) </div>
+<div style="position:absolute;bottom:4%;left:5%;width:900px;font-size:11pt;"> (Leushkin and Bazykin, 2013; Ometto et al., 2005; Petrov, 2002; Sjödin et al., 2010) </div>
 
 ## Importance of polarisation error
 
